@@ -25,7 +25,18 @@ db.run(
       FOREIGN KEY (userid) REFERENCES users(id)
     );`
 );
-db.run(`ALTER TABLE users ADD COLUMN isadmin NUMERIC DEFAULT 0;`);
-db.run(`ALTER TABLE items ADD COLUMN image BLOB;`);
-db.run("ALTER TABLE items ADD COLUMN imageType TEXT;");
+db.run(
+  `CREATE TABLE IF NOT EXISTS cart (
+    id INTEGER PRIMARY KEY,
+    quantity INTEGER NOT NULL,
+    itemid INTEGER,
+    sessionid INTEGER,
+    FOREIGN KEY (itemid) REFERENCES items(id),
+    FOREIGN KEY (sessionid) REFERENCES session(id)
+  );`
+);
+// db.run(`ALTER TABLE users ADD COLUMN isadmin NUMERIC DEFAULT 0;`);
+// db.run(`ALTER TABLE items ADD COLUMN image BLOB;`);
+// db.run("ALTER TABLE items ADD COLUMN imageType TEXT;");
+// db.run("ALTER TABLE items DROP COLUMN stock;");
 db.close();

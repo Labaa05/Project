@@ -5,3 +5,21 @@ html {
 .dev {
   border: 2px solid red;
 }
+
+#parent {
+  border: 3px solid red;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-content: center;
+  & img {
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+  }
+  & li {
+    list-style: none;
+    & h2 {
+      text-transform: capitalize;
+    }
+  }
+}

@@ -118,3 +118,7 @@ export async function matchSessionToUser(session) {
     return null;
   }
 }
+
+//Add cart table to database
+// cart > user id
+// 

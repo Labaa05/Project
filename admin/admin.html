@@ -29,10 +29,6 @@
               <input type="number" name="price" placeholder="Price" />
             </label>
             <label>
-              Stock
-              <input type="number" name="stock" placeholder="Stock" />
-            </label>
-            <label>
               Description
               <input type="text" name="description" placeholder="Description" />
             </label>
@@ -41,7 +37,7 @@
               <input type="file" name="image" accept=".jpg,.jpeg,.png>" />
             </label>
           </fieldset>
-          <input type="submit" value="Add product" />
+          <input type="submit" id="addButton" value="Add product" />
         </form>
 
         <form id="delete" action="/deleteproduct" method="delete">
@@ -52,7 +48,7 @@
               <input type="number" name="deleteid" />
             </label>
           </fieldset>
-          <input type="submit" value="Delete Product" />
+          <input type="submit" id="deleteButton" value="Delete Product" />
         </form>
       </section>
     </main>
@@ -60,4 +56,12 @@
     <footer id="footer-placeholder"></footer>
   </body>
   <script src="/js/common.js"></script>
+  <script>
+    document.getElementById('addButton').addEventListener('click', function (event) {
+        event.preventDefault();
+      });
+      document.getElementById('deleteButton').addEventListener('click', function (event) {
+          event.preventDefault();
+        });
+  </script>
 </html>

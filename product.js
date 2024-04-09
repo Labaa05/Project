@@ -4,11 +4,10 @@ export async function addproduct(product) {
   console.log(product);
   const res = new Promise((res, rej) => {
     db.run(
-      "INSERT INTO items(name, price, stock, description, image, imageType) VALUES ($name, $price, $stock, $description, $image, $imageType)",
+      "INSERT INTO items(name, price, description, image, imageType) VALUES ($name, $price, $description, $image, $imageType)",
       {
         $name: product.name,
         $price: product.price,
-        $stock: product.stock,
         $description: product.description,
         $image: product.image.buffer,
         $imageType: product.image.mimetype,
@@ -73,5 +72,23 @@ export async function deleteProductById(id) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+
+export async function getAllItems() {
+  const res = new Promise((res, rej) => {
+    db.all("SELECT id, name, price, description FROM items", (error, result) => {
+      if (error) {
+        rej(error);
+      } else {
+        res(result);
+      }
+    });
+  });
+  try {
+    await res;
+    return res;
+  } catch (error) {
+    return null;
   }
 }

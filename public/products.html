@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pico.min.css" />
+  </head>
+  <body>
+    <header id="header-placeholder"></header>
+    <main>
+      <section>
+        <ul id="parent"></ul>
+
+      </section>
+    </main>
+
+    <footer id="footer-placeholder"></footer>
+  </body>
+  <script src="/js/common.js"></script>
+  <script>
+    (async () => {
+      const res = await fetch("/product/all");
+      const items = await res.json();
+      console.log(items);
+      items.forEach((item) => {
+        const parent = document.getElementById("parent");
+        const li = document.createElement("li");
+        parent.append(li);
+
+        const div = document.createElement("div");
+        const img = document.createElement("img");
+        const h2 = document.createElement("h2");
+        const p = document.createElement("p");
+        const button = document.createElement("button");
+        div.appendChild(h2);
+        div.appendChild(img);
+        div.appendChild(p);
+        div.appendChild(button);
+        li.appendChild(div);
+        h2.textContent = item.name||"no title";
+        p.textContent = item.description;
+
+        img.setAttribute("src",`/product/image/${item.id}`);
+        img.setAttribute("alt","product");
+      });
+    })();
+  </script>
+</html>

@@ -1,6 +1,6 @@
 import express from "express";
 import { register, login, createSession, matchSessionToUser } from "./user.js";
-import { addproduct, getProductImage, deleteProductById } from "./product.js";
+import { addproduct, getProductImage, deleteProductById, getAllItems } from "./product.js";
 import multer from "multer";
 import cookieParser from "cookie-parser";
 import { join } from "path";
@@ -64,20 +64,28 @@ app.post("/addproduct", single, async (req, res) => {
   res.end();
 });
 
-app.get("/product/:id", async (req, res) => {
+app.get("/product/image/:id(\\d+)", async (req, res) => {
   const image = await getProductImage(req.params.id);
-
   // res.setHeader('Content-Type',image.imageType);
   // res.setHeader('Content-Length',image.image.length)
   res.end(image.image);
 });
 
-app.delete("/product/:id", async (req, res) => {
+app.delete("/product/:id(\\d+)", async (req, res) => {
   const succsess = await deleteProductById(req.params.id);
   if (succsess == true) {
     res.status(200).end();
   } else res.status(403).end();
 });
+
+app.get("/product/all", async (req, res) =>{
+const items = await getAllItems();
+res.setHeader('Content-Type', "application/json");
+res.json(items);
+res.status(200);
+res.end();
+});
+
 app.get("/components/header", async (req, res) => {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   const text = readFileSync(join(process.cwd(), "components", "header.html"));
@@ -92,6 +100,7 @@ app.get("/components/footer", async (req, res) => {
   // console.log(text);
   res.end(text);
 });
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
