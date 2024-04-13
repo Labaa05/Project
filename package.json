@@ -5,7 +5,8 @@
   "main": "admin.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev":"nodemon --watch src ./src/main.js",
+    "migrate":"node ./src/db/migrate.js" 
   },
   "author": "",
   "license": "ISC",

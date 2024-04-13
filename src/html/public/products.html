@@ -12,7 +12,6 @@
     <main>
       <section>
         <ul id="parent"></ul>
-
       </section>
     </main>
 
@@ -20,7 +19,7 @@
   </body>
   <script src="/js/common.js"></script>
   <script>
-    (async () => {
+    async () => {
       const res = await fetch("/product/all");
       const items = await res.json();
       console.log(items);
@@ -39,12 +38,11 @@
         div.appendChild(p);
         div.appendChild(button);
         li.appendChild(div);
-        h2.textContent = item.name||"no title";
+        h2.textContent = item.name || "no title";
         p.textContent = item.description;
 
-        img.setAttribute("src",`/product/image/${item.id}`);
-        img.setAttribute("alt","product");
-      });
-    })();
+        button.textContent = "Add to Cart";
+      })();
+    };
   </script>
 </html>

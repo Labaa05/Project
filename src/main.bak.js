@@ -1,3 +1,4 @@
+
 import express from "express";
 import { register, login, createSession, matchSessionToUser } from "./user.js";
 import { addproduct, getProductImage, deleteProductById, getAllItems } from "./product.js";
@@ -100,6 +101,27 @@ app.get("/components/footer", async (req, res) => {
   // console.log(text);
   res.end(text);
 });
+
+// app.post("/cart/add/:id(\\d+)", async (req, res) => {
+//   // Extract user session from cookies
+//   const userSession = req.cookies.session;
+
+//   // Match session to user
+//   const user = await matchSessionToUser(userSession);
+
+//   if (user === null) {
+//     return res.status(401).send("Unauthorized");
+//   }
+
+//   // Add item to cart
+//   try {
+//     await addItemToCart(user.id, req.params.id); // Assuming this function exists and handles the logic to add items to the cart
+//     res.status(200).send("Item added to cart successfully");
+//   } catch (error) {
+//     console.error("Error adding item to cart:", error);
+//     res.status(500).send("Error adding item to cart");
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

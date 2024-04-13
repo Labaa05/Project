@@ -1,5 +1,5 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./db.sqlite");
+import { db }from './db.js';
+
 db.run(
   `CREATE TABLE IF NOT EXISTS items (
     id INTEGER PRIMARY KEY,
@@ -39,4 +39,5 @@ db.run(
 // db.run(`ALTER TABLE items ADD COLUMN image BLOB;`);
 // db.run("ALTER TABLE items ADD COLUMN imageType TEXT;");
 // db.run("ALTER TABLE items DROP COLUMN stock;");
+// db.run(`ALTER TABLE session RENAME COLUMN uuid TO token;`);
 db.close();

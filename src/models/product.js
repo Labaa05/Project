@@ -92,3 +92,24 @@ export async function getAllItems() {
     return null;
   }
 }
+
+// export async function addItemToCart(userId, itemId) {
+//   const res = new Promise((resolve, reject) => {
+//     db.run(
+//       `INSERT INTO cart (quantity, itemid, sessionid) VALUES (1, $itemId, $userId)`,
+//       {
+//         $itemId: itemId,
+//         $userId: userId,
+//       },
+//       (error) => {
+//         if (error) {
+//           reject(error);
+//         } else {
+//           resolve();
+//         }
+//       }
+//     );
+//   });
+//   await res;
+// }
+
