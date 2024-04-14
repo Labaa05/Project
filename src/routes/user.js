@@ -40,7 +40,9 @@ router.post("/login", async (req, res) => {
   res.end();
 });
 
-router.get("/me", async (req, res) => {
+router.get("/me"
+,
+  async (req, res) => {
     // If the request does not have a session cookie, send 401 Unauthorized
   if (!req.cookies) {
     res.status(401).send("You do not have the session cookie");
@@ -49,6 +51,8 @@ router.get("/me", async (req, res) => {
   }
   // Call the matchSessionTokenToUser function with the session cookie
   const user = await matchSessionTokenToUser(req.cookies.session);
+  // Return the user as JSON
   res.json(user)
+  // End the response
   res.end();
 });

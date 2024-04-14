@@ -2,12 +2,12 @@ import { db } from "../db/db.js";
 import { v4 as uuidv4 } from "uuid";
 
 /**
- * @param {Object} user 
+ * @param {Object} user
  * @param {string} user.usernam
- * @param {string} user.email  
+ * @param {string} user.email
  * @param {string} user.password
  * @param {string} user.confirmpassword
- * 
+ *
  * @returns {boolean}
  */
 export async function register(user) {
@@ -51,14 +51,13 @@ export async function register(user) {
 }
 
 /**
- * @param {Object} user 
- * @param {string} user.username 
+ * @param {Object} user
+ * @param {string} user.username
  * @param {string} user.password
  */
 export async function login(user) {
   // Function is responsible for logging in a user
   // It will return the user object if the user was successfully logged in and null if the user was not logged in
-
 
   // Promise wrapper to make the function async
   const res = new Promise((res, rej) => {
@@ -108,7 +107,7 @@ export async function createSession(id) {
       },
       () => {
         // Resolve the promise with the uuid of the session
-        res(token); 
+        res(token);
       }
     );
   });
@@ -122,12 +121,11 @@ export async function createSession(id) {
 /**
  * @param {string | undefined} token The token of the session to match to a user
  * 
- * 
- * @returns {User | null}
+ * @returns {{id:string, username:string, email:string, isAdmin:number} | null}
  */
 export async function matchSessionTokenToUser(token) {
   // Check if the session token is undefined - means user was not logged in (had no cookie)
-  if(!token) return null
+  if (!token) return null;
 
   // Make the function async
   const res = new Promise((res, rej) => {
@@ -143,10 +141,10 @@ export async function matchSessionTokenToUser(token) {
       (_, result) => {
         // If the result is not undefined - a user was found
         // Resolve the promise with the user object
-        if(result) res(result)
-          // If the result is undefined - a user was not found
-      // Reject the promise with null
-        else rej(null)
+        if (result) res(result);
+        // If the result is undefined - a user was not found
+        // Reject the promise with null
+        else rej(null);
       }
     );
   });
@@ -154,7 +152,7 @@ export async function matchSessionTokenToUser(token) {
   // Wait for the promise to resolve
   try {
     const user = await res;
-    return user
+    return user;
   } catch (error) {
     // If the promise rejects (a user was not found), return null
     return null;

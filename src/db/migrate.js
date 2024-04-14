@@ -28,13 +28,21 @@ db.run(
 db.run(
   `CREATE TABLE IF NOT EXISTS cart (
     id INTEGER PRIMARY KEY,
-    quantity INTEGER NOT NULL,
-    itemid INTEGER,
-    sessionid INTEGER,
-    FOREIGN KEY (itemid) REFERENCES items(id),
-    FOREIGN KEY (sessionid) REFERENCES session(id)
+    completed NUMERIC DEFAULT 0,
+    userId INTEGER,
+    FOREIGN KEY (userId) REFERENCES users(id)
   );`
 );
+db.run(
+  `CREATE TABLE IF NOT EXISTS cartItems (
+    id INTEGER PRIMARY KEY,
+    cartId INTEGER,
+    itemId INTEGER,
+    quantity INTEGER,
+    FOREIGN KEY (cartId) REFERENCES cart(id),
+    FOREIGN KEY (itemId) REFERENCES items(id)
+  );`
+)
 // db.run(`ALTER TABLE users ADD COLUMN isadmin NUMERIC DEFAULT 0;`);
 // db.run(`ALTER TABLE items ADD COLUMN image BLOB;`);
 // db.run("ALTER TABLE items ADD COLUMN imageType TEXT;");

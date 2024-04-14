@@ -19,11 +19,13 @@
   </body>
   <script src="/js/common.js"></script>
   <script>
-    async () => {
-      const res = await fetch("/product/all");
-      const items = await res.json();
-      console.log(items);
-      items.forEach((item) => {
+    async function onLoad(){
+      const res = await fetch("/api/product/all");
+      /** 
+       * @type {Array<{name: string, price:number, description: string}>}
+      */
+      const products = await res.json();
+      products.forEach((product) => {
         const parent = document.getElementById("parent");
         const li = document.createElement("li");
         parent.append(li);
@@ -38,11 +40,34 @@
         div.appendChild(p);
         div.appendChild(button);
         li.appendChild(div);
-        h2.textContent = item.name || "no title";
-        p.textContent = item.description;
+        h2.textContent = product.name || "no title";
+        p.textContent = product.description;
 
-        button.textContent = "Add to Cart";
-      })();
+        console.log(product.id)
+
+        img.setAttribute("src", "/api/product/image/" + product.id);
+        button.textContent = "Add to Cart"
+
+        button.addEventListener("click", async () => {
+          const res = await fetch("/api/product/cart/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productId: product.id,
+              quantity: 1,
+            }),
+          });
+          if (res.ok) {
+            alert("Added to cart");
+          } else {
+            alert("Failed to add to cart");
+          }
+        })
+      })
     };
+
+    window.addEventListener("load", onLoad)
   </script>
 </html>
