@@ -1,51 +1,55 @@
-import { db }from './db.js';
+import { db } from "./db.js";
 
 db.run(
   `CREATE TABLE IF NOT EXISTS items (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     price NUMERIC NOT NULL,
-    stock INTEGER NOT NULL,
-    description TEXT
+    description TEXT,
+    image BLOB,
+    imageType TEXT
 );`
 );
 db.run(
   `CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL
+    username TEXT UNIQUE NOT NULL ,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL,
+    isadmin NUMERIC DEFAULT 0
 );`
 );
 db.run(
   `CREATE TABLE IF NOT EXISTS session (
       id INTEGER PRIMARY KEY,
       userid INTEGER,
-      uuid TEXT, 
+      token TEXT, 
       FOREIGN KEY (userid) REFERENCES users(id)
     );`
 );
 db.run(
-  `CREATE TABLE IF NOT EXISTS cart (
-    id INTEGER PRIMARY KEY,
-    completed NUMERIC DEFAULT 0,
-    userId INTEGER,
-    FOREIGN KEY (userId) REFERENCES users(id)
-  );`
-);
-db.run(
   `CREATE TABLE IF NOT EXISTS cartItems (
     id INTEGER PRIMARY KEY,
-    cartId INTEGER,
+    userId INTEGER,
     itemId INTEGER,
-    quantity INTEGER,
-    FOREIGN KEY (cartId) REFERENCES cart(id),
+    FOREIGN KEY (userId) REFERENCES user(id),
     FOREIGN KEY (itemId) REFERENCES items(id)
   );`
-)
-// db.run(`ALTER TABLE users ADD COLUMN isadmin NUMERIC DEFAULT 0;`);
-// db.run(`ALTER TABLE items ADD COLUMN image BLOB;`);
-// db.run("ALTER TABLE items ADD COLUMN imageType TEXT;");
-// db.run("ALTER TABLE items DROP COLUMN stock;");
-// db.run(`ALTER TABLE session RENAME COLUMN uuid TO token;`);
+);
+
+db.run(`CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY,
+    userId INTEGER,
+    itemId INTEGER,
+    purchaseDate INTEGER,
+    FOREIGN KEY (userId) REFERENCES user(id)
+    FOREIGN KEY (itemId) REFERENCES items(id)
+  );`);
+
+db.run(`CREATE TABLE IF NOT EXISTS userAddress (
+    id INTEGER PRIMARY KEY,
+    userId INTEGER,
+    address TEXT,
+    FOREIGN KEY (userId) REFERENCES user(id)
+  );`);
 db.close();

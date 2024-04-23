@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Address</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header id="header-placeholder"></header>
+    <main>
+      <section class="flex-row login mx-auto">
+        <img src="/assets/sign.jpg" />
+        <form action="/api/user/address" method="POST">
+          <h3>Address</h3>
+
+          <label>
+            Address
+            <input
+              name="address"
+              placeholder="Address"
+              autocomplete="address-level1"
+            />
+          </label>
+          <input type="submit" value="Save" class="button" />
+        </form>
+      </section>
+    </main>
+
+    <footer id="footer-placeholder"></footer>
+  </body>
+  <script src="/js/common.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", async () => {
+      const form = document.querySelector("form");
+      form.addEventListener("submit", async () => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const address = formData.get("address");
+        const res = await fetch("/api/user/address", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ address }),
+        });
+        if (res.status === 401) {
+          alert("You need to login first");
+          window.location.href = "/login.html";
+          return;
+        } else if (res.status === 200) {
+          alert("Address saved successfully");
+        } else {
+          alert("Failed to save address");
+        }
+      });
+
+      const addressInput = document.querySelector("input[name=address]");
+      console.log(addressInput);
+      const res = await fetch("/api/user/address");
+      if (res.status === 401) {
+        alert("You need to login first");
+        window.location.href = "/login.html";
+        return;
+      } else if (res.status === 404) {
+        alert("This user doesn't currently have an address, please add one.");
+      } else {
+        const data = await res.json();
+        addressInput.value = data.address;
+      }
+    });
+  </script>
+</html>

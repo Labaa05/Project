@@ -2,68 +2,82 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Register</title>
+    <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/pico.min.css" />
-    <!-- <script defer>
-      window.addEventListener("load", () => {
-        const button = document.getElementById("user");
-        button.addEventListener("click", (e) => {
-          fetch("/me");
-        });
-      });
-    </script> -->
   </head>
   <body>
     <header id="header-placeholder"></header>
-    <main class="container">
-      <section class="grid">
+    <main>
+      <section class="flex-row register mx-auto">
+        <img src="/assets/sign.jpg" alt="login wallpaper astetic" />
         <form id="register" action="/api/user/register" method="POST">
           <h3>Register</h3>
-          <fieldset>
-            <label>
-              Username
-              <input
-                name="username"
-                type="text"
-                placeholder="Username"
-                autocomplete="given-name"
-              />
-            </label>
-            <label>
-              Email
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                autocomplete="email"
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                autocomplete="password"
-              /> </label
-            ><label>
-              Confirm Password
-              <input
-                type="password"
-                name="confirmpassword"
-                placeholder="Password"
-                autocomplete="email"
-              />
-            </label>
-          </fieldset>
-
-          <input type="submit" value="Register" />
+          <label>
+            Username
+            <input
+              name="username"
+              type="text"
+              placeholder="Username"
+              autocomplete="given-name"
+            />
+          </label>
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              autocomplete="email"
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              autocomplete="password"
+            /> </label
+          ><label>
+            Confirm Password
+            <input
+              type="password"
+              name="confirmpassword"
+              placeholder="Password"
+              autocomplete="email"
+            />
+          </label>
+          <input class="button" type="submit" value="Register" />
         </form>
       </section>
     </main>
     <footer id="footer-placeholder"></footer>
   </body>
+  <script>
+    document
+      .getElementById("register")
+      .addEventListener("submit", function (event) {
+        const username = document.querySelector('[name="username"]').value;
+        const email = document.querySelector('[name="email"]').value;
+        const password = document.querySelector('[name="password"]').value;
+        const confirmPassword = document.querySelector(
+          '[name="confirmpassword"]'
+        ).value;
+
+        // Check if any field is empty
+        if (!username || !email || !password || !confirmPassword) {
+          event.preventDefault(); // Prevent form submission
+          alert("Please fill in all fields.");
+        }
+        // Check if passwords match
+        else if (password !== confirmPassword) {
+          event.preventDefault(); // Prevent form submission
+          alert("Passwords do not match.");
+        }
+      });
+  </script>
   <script src="/js/common.js"></script>
 </html>

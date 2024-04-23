@@ -2,53 +2,77 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/pico.min.css" />
   </head>
   <body>
     <header id="header-placeholder"></header>
 
     <main>
-      <section class="grid">
+      <section class="flex-row admin container mx-auto">
         <form
           action="/api/product/add"
           method="POST"
           enctype="multipart/form-data"
         >
           <h3>Add a Product</h3>
-          <fieldset>
-            <label>
-              Name
-              <input name="name" type="text" placeholder="Name" />
-            </label>
-            <label>
-              Price
-              <input type="number" name="price" placeholder="Price" />
-            </label>
-            <label>
-              Description
-              <input type="text" name="description" placeholder="Description" />
-            </label>
-            <label>
-              Image
-              <input type="file" name="image" accept=".jpg,.jpeg,.png>" />
-            </label>
-          </fieldset>
-          <input type="submit" id="addButton" value="Add product" />
+
+          <label>
+            Name
+            <input name="name" type="text" placeholder="Name" />
+          </label>
+          <label>
+            Price
+            <input type="number" name="price" placeholder="Price" />
+          </label>
+          <label>
+            Description
+            <input type="text" name="description" placeholder="Description" />
+          </label>
+          <label>
+            Image
+            <input type="file" name="image" />
+          </label>
+
+          <input
+            type="submit"
+            id="addButton"
+            value="Add product"
+            class="button"
+          />
         </form>
 
         <form action="/api/product/delete" method="POST">
           <h3>Delete Product</h3>
-          <fieldset>
-            <label>
-              ID
-              <input type="number" name="id" />
-            </label>
-          label</fieldset>
-          <input type="submit" id="deleteButton" value="Delete Product" />
+
+          <label>
+            ID
+            <input type="number" name="id" />
+          </label>
+
+          <input
+            type="submit"
+            id="deleteButton"
+            value="Delete Product"
+            class="button"
+          />
         </form>
+        <form action="/api/product/edit" method="POST">
+          <h3>Edit Product</h3>
+
+          <label>
+            ID
+            <input type="number" name="id" />
+          </label>
+
+          <input
+            type="submit"
+            id="editButton"
+            value="Edit Product"
+            class="button"
+          />
       </section>
     </main>
 

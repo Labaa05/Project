@@ -1,28 +1,30 @@
 import { db } from "../db/db.js";
 
+/**
+ * Delete a product from the database
+ * !!! Assume the product exists already !!!
+ *
+ * @param {number} id - The id of the product to delete
+ */
 export async function deleteProductById(id) {
-  const res = new Promise((res, rej) => {
-    db.run(
-      "DELETE FROM items WHERE id=$id;",
-      {
-        $id: id,
-      },
-      function () {
-        console.log(this);
-        if (this.changes > 0) res();
-        else rej();
-      }
-    );
+  const res = new Promise((res) => {
+    //  Delete the product from the database
+    db.run(`DELETE FROM items WHERE id=$id;`, {
+      $id: id,
+    });
+
+    // Delete any cart items that have the product reference
+    db.run(`DELETE FROM cartItems WHERE itemId=$id;`, {
+      $id: id,
+    });
+
+    res();
   });
-  try {
-    await res;
-    return true;
-  } catch (error) {
-    return false;
-  }
+
+  await res;
+  return true;
 }
 
-// New functions
 /**
  * Get all products from the database
  *
@@ -123,85 +125,212 @@ export async function addProduct(product) {
   return lastID;
 }
 
-// export async function addItemToCart(userId, itemId) {
-//   const res = new Promise((resolve, reject) => {
-//     db.run(
-//       `INSERT INTO cart (quantity, itemid, sessionid) VALUES (1, $itemId, $userId)`,
-//       {
-//         $itemId: itemId,
-//         $userId: userId,
-//       },
-//       (error) => {
-//         if (error) {
-//           reject(error);
-//         } else {
-//           resolve();
-//         }
-//       }
-//     );
-//   });
-//   await res;
-// }
-
-async function createActiveCart(userId) {
-  const res = new Promise((res) => {
-    db.run(
-      `INSERT INTO cart (userId) VALUES ($userId)`,
-      {
-        $userId: userId,
-      },
-      function (err, result) {
-         res(this.lastID);
-      }
-    );
-  });
-
-  return await res;
-}
-
-async function getActiveCartId(userId) {
-  // Make callback into a promise
-  const res = new Promise((res, rej) => {
-    // Get the active cart id from the database
-    db.get(
-      `SELECT id FROM cart WHERE userId = $userId AND completed = 0`,
-      {
-        $userId: userId,
-      },
-      (_, result) => {
-        if (result) res(result);
-        else rej(null);
-      }
-    );
-  });
-
-  try {
-    // Wait for the promise to resolve
-    const cart = await res;
-    return cart.id
-  } catch (error) {
-    // If there is an error, the user has no active carts
-    const id = await createActiveCart(userId);
-    return id;
-  }
-}
-
-export async function addProductToCart(userId, itemId, quantity) {
-  const cartId = await getActiveCartId(userId);
-  console.log("Cart id is:", cartId);
+/// ----------------- Cart functions -----------------
+///
+///
+export async function addProductToCart(userId, itemId) {
   const res = new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO cartItems (cartId, itemId, quantity) VALUES ($cartId, $itemId, $quantity)`,
+      `INSERT INTO cartItems (userId, itemId ) VALUES ($userId, $itemId);`,
       {
-        $cartId: cartId,
+        $userId: userId,
         $itemId: itemId,
-        $quantity: quantity,
       },
       function () {
         resolve(this.lastID);
       }
     );
   });
-  const id = await res;
-  console.log("Created cartItem is : ", id);
+  await res;
+}
+
+export async function getCartItems(userId) {
+  const res = new Promise((res, rej) => {
+    db.all(
+      `SELECT * FROM cartItems WHERE userId = $userId;`,
+      {
+        $userId: userId,
+      },
+      (error, result) => {
+        if (!error && result) res(result);
+        else rej(null);
+      }
+    );
+  });
+
+  try {
+    const cartItems = await res;
+    return cartItems;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * @param {number} id - The id of the product to get
+ *
+ * @param {Product} product - The product to create
+ * @param {string} product.name - The name of the product
+ * @param {number} product.price - The price of the product
+ * @param {string} product.description - The description of the product
+ *
+ * @returns {Promise<Product | null>} A promise that resolves with a boolean indicating success
+ */
+export async function getProductById(id) {
+  const res = new Promise((res, rej) => {
+    db.get(
+      "SELECT id,name,price,description FROM items WHERE id=$id;",
+      {
+        $id: id,
+      },
+      (error, result) => {
+        if (!error && result) res(result);
+        else rej(null);
+      }
+    );
+  });
+  try {
+    const product = await res;
+    return product;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Edit a product in the database
+ * !!! Assume the product exists already !!!
+ *
+ * @param {Product} product - The product to edit
+ * @param {string} product.name - The name of the product
+ * @param {number} product.price - The price of the product
+ * @param {string} product.description - The description of the product
+ *
+ * @returns {Promise<Product | null>} A promise that resolves with a boolean indicating success
+ */
+export async function editProduct(product) {
+  const res = new Promise((res, rej) => {
+    db.run(
+      "UPDATE items SET name=$name, price=$price, description=$description WHERE id=$id;",
+      {
+        $id: product.id,
+        $name: product.name,
+        $price: product.price,
+        $description: product.description,
+      },
+      function () {
+        if (this.changes > 0) res();
+        else rej();
+      }
+    );
+  });
+
+  try {
+    const changes = await res;
+    return changes;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function removeItemFromCart(userid, cartItemId) {
+  const res = new Promise((res, rej) => {
+    db.run(
+      "DELETE FROM cartItems WHERE userId=$userId AND id=$id;",
+      {
+        $userId: userid,
+        $id: cartItemId,
+      },
+      function (error) {
+        console.log(error);
+        if (this.changes > 0) res();
+        else rej();
+      }
+    );
+  });
+
+  try {
+    await res;
+    return true;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function addItemToOrders(userId, itemId) {
+  console.log("Adding item to orders: Userid, itemid ", userId, itemId);
+  const res = new Promise((res, rej) => {
+    db.run(
+      `INSERT INTO orders (userId, itemId, purchaseDate) 
+    VALUES ($userId, $itemId, $purchaseDate)
+  `,
+      {
+        $userId: userId,
+        $itemId: itemId,
+        $purchaseDate: new Date().getDate(),
+      },
+      function () {
+        console.log(this.changes);
+        if (this.changes > 0) res();
+        else rej();
+      }
+    );
+  });
+
+  try {
+    await res;
+    return true;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function getCardItemById(userId, cartItemId) {
+  const res = new Promise((res, rej) => {
+    db.get(
+      `SELECT * FROM cartItems WHERE userId=$userId AND id=$id;`,
+      {
+        $userId: userId,
+        $id: cartItemId,
+      },
+      function (error, result) {
+        if (result) res(result);
+        else rej();
+      }
+    );
+  });
+
+  try {
+    const item = await res;
+    return item;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function buyCartItem(userId, cartItemId) {
+  const cardItem = await getCardItemById(userId, cartItemId);
+  if (!cardItem) return null;
+
+  const res = new Promise((res, rej) => {
+    db.run(
+      "DELETE FROM cartItems WHERE userId=$userId AND id=$id",
+      {
+        $id: cartItemId,
+        $userId: userId,
+      },
+      function () {
+        if (this.changes > 0) res();
+        else rej();
+      }
+    );
+  });
+  try {
+    const result = await res;
+    const op = await addItemToOrders(userId, cardItem.itemId);
+    if (op) return true;
+    else return null;
+  } catch (error) {
+    return null;
+  }
 }

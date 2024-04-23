@@ -2,38 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Login</title>
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/pico.min.css" />
   </head>
   <body>
     <header id="header-placeholder"></header>
-    <main class="container">
-      <section class="grid">
+    <main>
+      <section class="flex-row login mx-auto">
+        <img src="/assets/sign.jpg" />
         <form action="/api/user/login" method="post">
           <h3>Log in</h3>
-          <fieldset>
-            <label>
-              Username
-              <input
-                name="username"
-                placeholder="Username"
-                autocomplete="given-name"
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                autocomplete="password"
-              />
-            </label>
-          </fieldset>
 
-          <input type="submit" value="Log in" />
+          <label>
+            Username
+            <input
+              name="username"
+              placeholder="Username"
+              autocomplete="given-name"
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              autocomplete="password"
+            />
+          </label>
+
+          <input type="submit" value="Log in" class="button" />
         </form>
       </section>
     </main>

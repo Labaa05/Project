@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header" id="header-placeholder"></header>
+
+    <main>
+      <section class="cart container mx-auto"></section>
+    </main>
+    <footer id="footer-placeholder"></footer>
+  </body>
+  <script src="/js/common.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const ul = document.createElement("ul");
+      ul.classList.add("flex-col");
+      ul.classList.add("flex-gap");
+      const section = document.querySelector("section");
+      section.appendChild(ul);
+
+      const res = await fetch("/api/product/cart");
+      /**
+       * @type {{id:string, itemId:number, userId:number}[]}
+       */
+      const cartItems = await res.json();
+      const keys = new Map();
+      let items = [];
+      let totalSum = 0; // Variable to store the total sum
+
+      for (const item of cartItems) {
+        if (keys.has(item.itemId)) {
+          keys.set(item.itemId, keys.get(item.itemId) + 1);
+        } else {
+          items.push(item);
+          keys.set(item.itemId, 1);
+        }
+      }
+
+      for (const item of items) {
+        const li = document.createElement("li");
+        ul.appendChild(li);
+
+        const img = document.createElement("img");
+        img.setAttribute("src", `/api/product/image/${item.itemId}`);
+        li.appendChild(img);
+        const res = await fetch(`/api/product/${item.itemId}`);
+        const product = await res.json();
+        totalSum += product.price * keys.get(item.itemId); // Update totalSum
+
+        // cardBody Body
+        const cardBody = document.createElement("div");
+        li.appendChild(cardBody);
+
+        // Col1
+        const col1 = document.createElement("div");
+        cardBody.appendChild(col1);
+
+        // Col1 - name
+        const h2 = document.createElement("h2");
+        h2.textContent = product.name;
+        col1.appendChild(h2);
+
+        // Col1 - description
+        const p = document.createElement("p");
+        p.textContent = product.description;
+        col1.appendChild(p);
+
+        // Col1 - price
+        const p2 = document.createElement("p");
+        p2.textContent = product.price + " BGN";
+        col1.appendChild(p2);
+
+        const p3 = document.createElement("p");
+        p3.textContent = `Quantity: ${keys.get(item.itemId)}`;
+        col1.appendChild(p3);
+
+        // Col2
+        const col2 = document.createElement("div");
+
+        cardBody.appendChild(col2);
+
+        const button = document.createElement("button");
+        button.classList.add("button");
+        button.textContent = "Remove";
+        col2.appendChild(button);
+
+        // TODO
+        button.addEventListener("click", async () => {
+          const res = await fetch(`/api/product/cart/${item.id}`, {
+            method: "DELETE",
+          });
+          if (res.status === 200) {
+            li.remove();
+            alert(`Item ${product.name} removed from cart`);
+            window.location.reload();
+          } else {
+            alert("Error removing item from cart");
+          }
+        });
+
+        const button2 = document.createElement("button");
+        button2.classList.add("button");
+        button2.textContent = "Buy";
+        col2.appendChild(button2);
+
+        button2.addEventListener("click", async () => {
+          const res = await fetch(`/api/product/cart/buy/${item.id}`, {
+            method: "POST",
+          });
+          if (res.status === 403) {
+            alert(
+              "You currently do not have an address set up! Please set up an address in your profile settings."
+            );
+            window.location.href = "/address.html";
+          }
+          if (res.status === 200) {
+            alert(`Item ${product.name} bought`);
+            li.remove();
+            items = items.filter((i) => i.id !== item.id);
+            window.location.reload();
+          }
+        });
+      }
+
+      if (!items.length) {
+        const h2 = document.createElement("h1");
+        h2.textContent = "No items in cart";
+        section.appendChild(h2);
+        return;
+      }
+
+      const totalSumDisplay = document.createElement("p");
+      totalSumDisplay.textContent = `Total: ${totalSum} BGN`;
+      section.appendChild(totalSumDisplay);
+
+      const buyAllButton = document.createElement("button");
+      buyAllButton.classList.add("button");
+      buyAllButton.textContent = "Buy All";
+      section.appendChild(buyAllButton);
+
+      buyAllButton.addEventListener("click", async () => {
+        const promises = Promise.all(
+          cartItems.map((item) =>
+            fetch(`/api/product/cart/buy/${item.id}`, {
+              method: "POST",
+            })
+          )
+        );
+        await promises;
+        section.removeChild(ul);
+        section.removeChild(buyAllButton);
+        alert("All items have been bought");
+        window.location.href = "/index.html";
+      });
+    });
+  </script>
+</html>

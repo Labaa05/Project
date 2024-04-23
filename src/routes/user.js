@@ -4,10 +4,15 @@ import {
   login,
   createSession,
   matchSessionTokenToUser,
+  getUserAdddress,
+  updateUserAddress,
 } from "../models/user.js";
+import { isUser } from "../middleware/user.js";
 import cookieParser from "cookie-parser";
 
 export const router = express.Router();
+
+router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 router.use(cookieParser());
 
@@ -34,16 +39,33 @@ router.post("/login", async (req, res) => {
     res.redirect(302, "/index.html");
     // End the response
   }
-    // If the login function returns null, send 401 Unauthorized
+  // If the login function returns null, send 401 Unauthorized
   else res.status(401).send("Unauthorized");
   // End the response
   res.end();
 });
 
-router.get("/me"
-,
-  async (req, res) => {
-    // If the request does not have a session cookie, send 401 Unauthorized
+router.get("/address", isUser, async (req, res) => {
+  const userAdress = await getUserAdddress(req.user.id);
+  console.log(userAdress);
+  if (!userAdress) res.status(404).end();
+  else res.json(userAdress).end();
+});
+
+router.post("/address", isUser, async (req, res) => {
+  console.log(
+    "Setting address for user with id",
+    req.user.id,
+    "to",
+    req.body.address
+  );
+  const success = await updateUserAddress(req.user.id, req.body.address);
+  if (success) res.redirect("/address.html");
+  else res.status(500).end();
+});
+
+router.get("/me", async (req, res) => {
+  // If the request does not have a session cookie, send 401 Unauthorized
   if (!req.cookies) {
     res.status(401).send("You do not have the session cookie");
     res.end();
@@ -52,7 +74,7 @@ router.get("/me"
   // Call the matchSessionTokenToUser function with the session cookie
   const user = await matchSessionTokenToUser(req.cookies.session);
   // Return the user as JSON
-  res.json(user)
+  res.json(user);
   // End the response
   res.end();
 });

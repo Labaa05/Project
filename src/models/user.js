@@ -120,7 +120,7 @@ export async function createSession(id) {
 
 /**
  * @param {string | undefined} token The token of the session to match to a user
- * 
+ *
  * @returns {{id:string, username:string, email:string, isAdmin:number} | null}
  */
 export async function matchSessionTokenToUser(token) {
@@ -155,6 +155,64 @@ export async function matchSessionTokenToUser(token) {
     return user;
   } catch (error) {
     // If the promise rejects (a user was not found), return null
+    return null;
+  }
+}
+
+export async function getUserAdddress(userId) {
+  const res = new Promise((res) => {
+    db.get(
+      `SELECT address FROM userAddress WHERE userId = $userId;`,
+      {
+        $userId: userId,
+      },
+      (_, result) => {
+        res(result);
+      }
+    );
+  });
+
+  return await res;
+}
+
+export async function updateUserAddress(userId, newAddress) {
+  const currentAdress = await getUserAdddress(userId);
+  const res = new Promise((res, rej) => {
+    // Check to see  if user already has an adress
+    // If he does, do an update
+    if (currentAdress) {
+      db.run(
+        `UPDATE userAddress SET address = $address WHERE userId = $userId;`,
+        {
+          $address: newAddress,
+          $userId: userId,
+        },
+        function () {
+          if (this.changes > 0) res();
+          else rej();
+        }
+      );
+    }
+    // If not, do an insert
+    else {
+      db.run(
+        `INSERT INTO userAddress (userId, address) VALUES ($userId, $address);`,
+        {
+          $address: newAddress,
+          $userId: userId,
+        },
+        function () {
+          if (this.changes > 0) res();
+          else rej();
+        }
+      );
+    }
+  });
+
+  try {
+    await res;
+    return true;
+  } catch (error) {
     return null;
   }
 }

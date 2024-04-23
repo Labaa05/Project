@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+
+    <header id="header-placeholder"></header>
+    <main>
+        <section class="flex-col flex-center container mx-auto">
+            <form action="/api/product/edit" method="POST">
+
+          <label class="hidden">
+            Hidden id field
+            <input id='id' name="id" type="text"  />
+
+          </label>
+
+          <label>
+            Name
+            <input id='name'name="name" type="text" />
+
+          </label>
+          <label>
+            Price
+            <input id="price" type="number" name="price"  />
+          </label>
+          <label>
+            Description
+            <input id='description' type="text" name="description" />
+          </label>
+
+          <input
+            type="submit"
+            value="Edit Product"
+            class="button"
+          />
+            </form>
+
+        </main>
+    </main>
+
+    <footer id="footer-placeholder"></footer>
+  </body>
+  <script src="/js/common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const query = new URLSearchParams(window.location.search);
+      const id = query.get("id");
+      (async () => {
+        const res = await fetch(`/api/product/${id}`);
+        const data = await res.json()
+        document.getElementById('id').value = data.id;
+        document.getElementById('name').value = data.name;
+        document.getElementById('price').value = data.price;
+        document.getElementById('description').value = data.description;
+      })();
+    });
+  </script>
+</html>
