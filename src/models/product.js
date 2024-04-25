@@ -1,19 +1,11 @@
 import { db } from "../db/db.js";
 
-/**
- * Delete a product from the database
- * !!! Assume the product exists already !!!
- *
- * @param {number} id - The id of the product to delete
- */
 export async function deleteProductById(id) {
   const res = new Promise((res) => {
-    //  Delete the product from the database
     db.run(`DELETE FROM items WHERE id=$id;`, {
       $id: id,
     });
 
-    // Delete any cart items that have the product reference
     db.run(`DELETE FROM cartItems WHERE itemId=$id;`, {
       $id: id,
     });
@@ -25,47 +17,23 @@ export async function deleteProductById(id) {
   return true;
 }
 
-/**
- * Get all products from the database
- *
- * @param {Product}
- * @param {string} Product.id - The id of the product
- * @param {string} Product.name - The name of the product
- * @param {number} Product.price - The price of the product
- * @param {string} Product.description - The description of the product
- * @returns {Promise<Array<Product>>} A promise that resolves with an array of products
- */
 export async function getAllProducts() {
-  // Make callback into a promise
   const res = new Promise((res) => {
-    // Get all items from the database
     db.all("SELECT id, name, price, description FROM items", (_, result) => {
-      // Return the result
       res(result);
     });
   });
 
-  // Wait for the promise to resolve
   const products = await res;
   return products;
 }
 
-/**
- * Get an image for a product from the database
- *
- * @param {string} id - The id of the product of which to get the image of
- *
- * @returns {Promise<{buffer:Buffer, type:string}>} A promise that resolves with the image buffer
- */
 export async function getImageBuffer(id) {
-  // Make callback into a promise
   const res = new Promise((res, rej) => {
-    // Get the image from the database
     db.get(
       "SELECT image AS buffer, imageType AS type FROM items WHERE id=$id",
       { $id: id },
       (error, result) => {
-        // If there is an error, reject the promise
         if (result) res(result);
         else rej(null);
       }
@@ -73,35 +41,18 @@ export async function getImageBuffer(id) {
   });
 
   try {
-    // Wait for the promise to resolve
     const result = await res;
     return {
       buffer: result.buffer,
       type: result.type,
     };
   } catch (error) {
-    // If there is an error, return null
     return null;
   }
 }
 
-/**
- * Create a new product in the database
- *
- * @param {Product} product - The product to create
- * @param {string} product.name - The name of the product
- * @param {number} product.price - The price of the product
- * @param {string} product.description - The description of the product
- * @param {Buffer} product.image - The image of the product
- * @param {string} product.image.mimetype - The mimetype of the image
- *
- * @returns {Promise<number>} A promise that resolves with a boolean indicating success
- */
 export async function addProduct(product) {
-  // Make callback into a promise
-
   const res = new Promise((res, rej) => {
-    // Insert the product into the database
     db.run(
       "INSERT INTO items(name, price, description, image, imageType) VALUES ($name, $price, $description, $image, $imageType)",
       {
@@ -112,22 +63,16 @@ export async function addProduct(product) {
         $imageType: product.image.mimetype,
       },
       function () {
-        // If the product was inserted, resolve the promise with the id of the product
         res(this.lastID);
       }
     );
   });
 
-  // Wait for the promise to resolve
   const lastID = await res;
 
-  // Return the id of the product
   return lastID;
 }
 
-/// ----------------- Cart functions -----------------
-///
-///
 export async function addProductToCart(userId, itemId) {
   const res = new Promise((resolve, reject) => {
     db.run(
@@ -166,16 +111,6 @@ export async function getCartItems(userId) {
   }
 }
 
-/**
- * @param {number} id - The id of the product to get
- *
- * @param {Product} product - The product to create
- * @param {string} product.name - The name of the product
- * @param {number} product.price - The price of the product
- * @param {string} product.description - The description of the product
- *
- * @returns {Promise<Product | null>} A promise that resolves with a boolean indicating success
- */
 export async function getProductById(id) {
   const res = new Promise((res, rej) => {
     db.get(
@@ -197,17 +132,6 @@ export async function getProductById(id) {
   }
 }
 
-/**
- * Edit a product in the database
- * !!! Assume the product exists already !!!
- *
- * @param {Product} product - The product to edit
- * @param {string} product.name - The name of the product
- * @param {number} product.price - The price of the product
- * @param {string} product.description - The description of the product
- *
- * @returns {Promise<Product | null>} A promise that resolves with a boolean indicating success
- */
 export async function editProduct(product) {
   const res = new Promise((res, rej) => {
     db.run(
@@ -333,4 +257,21 @@ export async function buyCartItem(userId, cartItemId) {
   } catch (error) {
     return null;
   }
+}
+
+export async function getPurchaseHistory(userId) {
+  const res = new Promise((res, rej) => {
+    db.all(
+      `SELECT * FROM orders WHERE userId=$userId;`,
+      {
+        $userId: userId,
+      },
+      (error, result) => {
+        if (result) res(result);
+        else rej();
+      }
+    );
+  });
+
+  return await res;
 }

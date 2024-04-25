@@ -52,27 +52,22 @@
         li.appendChild(img);
         const res = await fetch(`/api/product/${item.itemId}`);
         const product = await res.json();
-        totalSum += product.price * keys.get(item.itemId); // Update totalSum
+        totalSum += product.price * keys.get(item.itemId);
 
-        // cardBody Body
         const cardBody = document.createElement("div");
         li.appendChild(cardBody);
 
-        // Col1
         const col1 = document.createElement("div");
         cardBody.appendChild(col1);
 
-        // Col1 - name
         const h2 = document.createElement("h2");
         h2.textContent = product.name;
         col1.appendChild(h2);
 
-        // Col1 - description
         const p = document.createElement("p");
         p.textContent = product.description;
         col1.appendChild(p);
 
-        // Col1 - price
         const p2 = document.createElement("p");
         p2.textContent = product.price + " BGN";
         col1.appendChild(p2);
@@ -81,7 +76,6 @@
         p3.textContent = `Quantity: ${keys.get(item.itemId)}`;
         col1.appendChild(p3);
 
-        // Col2
         const col2 = document.createElement("div");
 
         cardBody.appendChild(col2);
@@ -91,7 +85,6 @@
         button.textContent = "Remove";
         col2.appendChild(button);
 
-        // TODO
         button.addEventListener("click", async () => {
           const res = await fetch(`/api/product/cart/${item.id}`, {
             method: "DELETE",
@@ -146,6 +139,14 @@
       section.appendChild(buyAllButton);
 
       buyAllButton.addEventListener("click", async () => {
+        const addressRes = await fetch("/api/user/address");
+        if (!addressRes.ok) {
+          alert(
+            "You currently do not have an address set up! Please set up an address in your profile settings."
+          );
+          window.location.href = "/address.html";
+          return;
+        }
         const promises = Promise.all(
           cartItems.map((item) =>
             fetch(`/api/product/cart/buy/${item.id}`, {

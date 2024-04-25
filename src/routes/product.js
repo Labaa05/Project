@@ -10,6 +10,7 @@ import {
   getCartItems,
   removeItemFromCart,
   buyCartItem,
+  getPurchaseHistory,
 } from "../models/product.js";
 import { getUserAdddress } from "../models/user.js";
 import { isAdmin } from "../middleware/admin.js";
@@ -21,8 +22,8 @@ router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 const single = multer({ storage: multer.memoryStorage() }).single("image");
 
-/// ----------------- Public  -----------------
 ///
+///----------------- Public  -----------------
 ///
 router.get("/:id(\\d+)", async (req, res) => {
   const product = await getProductById(req.params.id);
@@ -31,33 +32,32 @@ router.get("/:id(\\d+)", async (req, res) => {
   res.end();
 });
 
-// Get all products
 router.get("/all", async (req, res) => {
   const products = await getAllProducts();
   res.json(products);
   res.end();
 });
 
-// Get image by product id
 router.get("/image/:id", async (req, res) => {
-  // Get product id
   const id = req.params.id;
-  // Get product image
+
   const product = await getImageBuffer(id);
-  // If product exists, send image
+
   if (product) {
-    // Set headers and send image
     res.setHeader("Content-Type", product.type);
-    // Send image buffer
+
     res.end(product.buffer);
-  }
-  // If product does not exist, send 404 status
-  else res.status(404).end();
+  } else res.status(404).end();
 });
 
+///
 /// ----------------- User routes -----------------
 ///
-///
+
+router.get("/history", isUser, async (req, res) => {
+  const purchaseHistory = await getPurchaseHistory(req.user.id);
+  res.json(purchaseHistory).end();
+});
 router.post("/cart/add", isUser, async (req, res) => {
   const result = await addProductToCart(req.user.id, req.body.productId);
   res.end();
@@ -88,23 +88,22 @@ router.post("/cart/buy/:id", isUser, async (req, res) => {
   if (!result) res.status(404);
   res.end();
 });
-
+//
 // ----------------- Admin routes -----------------
+//
 
-// Editing product
 router.post("/edit", isAdmin, async (req, res) => {
   const product = await editProduct(req.body);
-  // If product was edited, redirect to edito page of the item
+
   res.redirect("/admin/edit.html?id=" + req.body.id);
   res.end();
 });
 
 router.post("/add", isAdmin, single, async (req, res) => {
-  // Combine body and file data
   const data = { ...req.body, image: req.file };
-  // Add product
+
   const productId = await addProduct(data);
-  // Send response
+
   res.redirect("/admin");
   res.end();
 });

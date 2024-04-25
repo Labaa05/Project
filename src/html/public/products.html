@@ -20,7 +20,7 @@
     async function onLoad() {
       const parent = document.getElementsByClassName("products").item(0);
       const res = await fetch("/api/product/all");
-      // Ul parent
+
       const ul = document.createElement("ul");
       parent.appendChild(ul);
 
@@ -29,34 +29,26 @@
       ul.classList.add("flex-wrap");
       ul.classList.add("flex-gap");
 
-      /**
-       * @type {{name: string, price:number, description: string}[]}
-       */
       const products = await res.json();
       products.forEach((product) => {
         if (!parent) throw new Error("Cannot find products parent element");
 
-        // Card body
         const li = document.createElement("li");
         ul.append(li);
         li.classList.add("card");
 
-        // Card img
         const img = document.createElement("img");
         img.src = "/api/product/image/" + product.id;
         li.appendChild(img);
 
-        // Card body
         const div = document.createElement("div");
         div.classList.add("card-body");
         li.appendChild(div);
 
-        // Card title
         const h2 = document.createElement("h2");
         h2.textContent = product.name || "no title";
         div.appendChild(h2);
 
-        // Card description
         const p = document.createElement("p");
         p.textContent = product.description;
         div.appendChild(p);
@@ -65,13 +57,12 @@
         wrapper.classList.add("wrapper");
         div.appendChild(wrapper);
 
-        // Card button - add to card
         const button = document.createElement("button");
         button.classList.add("button");
         button.textContent = "Add to Cart";
 
         wrapper.appendChild(button);
-        // Price
+
         const price = document.createElement("p");
         price.textContent = product.price + " BGN";
         price.classList.add("price");

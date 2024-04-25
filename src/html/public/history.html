@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header" id="header-placeholder"></header>
+
+    <main>
+      <section class="cart container mx-auto">
+        <h1>Purchase history</h1>
+      </section>
+    </main>
+    <footer id="footer-placeholder"></footer>
+  </body>
+  <script src="/js/common.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const ul = document.createElement("ul");
+      ul.classList.add("flex-col");
+      ul.classList.add("flex-gap");
+      const section = document.querySelector("section");
+      section.appendChild(ul);
+
+      const res = await fetch("/api/product/history");
+
+      const purchasedItems = await res.json();
+      const keys = new Map();
+      let items = [];
+      let totalSum = 0;
+
+      for (const item of purchasedItems) {
+        if (keys.has(item.itemId)) {
+          keys.set(item.itemId, keys.get(item.itemId) + 1);
+        } else {
+          items.push(item);
+          keys.set(item.itemId, 1);
+        }
+      }
+
+      for (const item of items) {
+        const li = document.createElement("li");
+        ul.appendChild(li);
+
+        const img = document.createElement("img");
+        img.setAttribute("src", `/api/product/image/${item.itemId}`);
+        li.appendChild(img);
+        const res = await fetch(`/api/product/${item.itemId}`);
+        const product = await res.json();
+        totalSum += product.price * keys.get(item.itemId);
+
+        const cardBody = document.createElement("div");
+        li.appendChild(cardBody);
+
+        const col1 = document.createElement("div");
+        cardBody.appendChild(col1);
+
+        const h2 = document.createElement("h2");
+        h2.textContent = product.name;
+        col1.appendChild(h2);
+
+        const p = document.createElement("p");
+        p.textContent = product.description;
+        col1.appendChild(p);
+
+        const p2 = document.createElement("p");
+        p2.textContent = product.price + " BGN";
+        col1.appendChild(p2);
+
+        const p3 = document.createElement("p");
+        p3.textContent = `Quantity: ${keys.get(item.itemId)}`;
+        col1.appendChild(p3);
+
+        const col2 = document.createElement("div");
+
+        cardBody.appendChild(col2);
+
+        if (!items.length) {
+          const h2 = document.createElement("h1");
+          h2.textContent = "No purchase history";
+          section.appendChild(h2);
+          return;
+        }
+      }
+    });
+  </script>
+</html>

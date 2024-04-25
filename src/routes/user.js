@@ -18,30 +18,24 @@ router.use(cookieParser());
 
 router.post("/register", async (req, res) => {
   const success = await register(req.body);
-  // Redirect to login page if registration is successful
   if (success) res.redirect(302, "/index.html");
-  // Send 401 Unauthorized if registration fails
   else res.statu(401).send("Unauthorized");
-  // End the response
   res.end();
 });
 
 router.post("/login", async (req, res) => {
-  // Call the login function with the request body - where the login form's data is stored
   const user = await login(req.body);
-  // If the login function returns a user object, create a session and set the session cookie
   if (user) {
-    // Create a session
     const session = await createSession(user.id);
-    // Set the session cookie
     res.cookie("session", session);
-    // Redirect to the index page
     res.redirect(302, "/index.html");
-    // End the response
-  }
-  // If the login function returns null, send 401 Unauthorized
-  else res.status(401).send("Unauthorized");
-  // End the response
+  } else res.status(401).send("Unauthorized");
+  res.end();
+});
+
+router.get("/logout", async (req, res) => {
+  res.cookie("session", "", { expires: new Date(0) });
+  res.redirect(302, "/index.html");
   res.end();
 });
 
@@ -64,17 +58,7 @@ router.post("/address", isUser, async (req, res) => {
   else res.status(500).end();
 });
 
-router.get("/me", async (req, res) => {
-  // If the request does not have a session cookie, send 401 Unauthorized
-  if (!req.cookies) {
-    res.status(401).send("You do not have the session cookie");
-    res.end();
-    return;
-  }
-  // Call the matchSessionTokenToUser function with the session cookie
-  const user = await matchSessionTokenToUser(req.cookies.session);
-  // Return the user as JSON
-  res.json(user);
-  // End the response
+router.get("/me", isUser, async (req, res) => {
+  res.json(req.user);
   res.end();
 });

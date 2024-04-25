@@ -67,14 +67,11 @@
           '[name="confirmpassword"]'
         ).value;
 
-        // Check if any field is empty
         if (!username || !email || !password || !confirmPassword) {
-          event.preventDefault(); // Prevent form submission
+          event.preventDefault();
           alert("Please fill in all fields.");
-        }
-        // Check if passwords match
-        else if (password !== confirmPassword) {
-          event.preventDefault(); // Prevent form submission
+        } else if (password !== confirmPassword) {
+          event.preventDefault();
           alert("Passwords do not match.");
         }
       });

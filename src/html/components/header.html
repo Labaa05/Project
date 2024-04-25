@@ -7,11 +7,17 @@
   <ul>
     <li><a href="/about.html">About Us</a></li>
     <li><a href="/products.html">Products</a></li>
-    <li><a href="/register.html">Register</a></li>
-    <li><a href="/login.html">Login</a></li>
-    <li><a href="/address.html">Address</a></li>
-    <li><a href="/cart.html">Cart</a></li>
-    <li><a href="/admin">Admin</a></li>
+    <li><a id='history-link' class='hidden' href="/history.html">Purchase history</li>a></li>
+    <li id="address-link" class="hidden">
+      <a href="/address.html">Address</a>
+    </li>
+    <li id="cart-link" class="hidden"><a href="/cart.html">Cart</a></li>
+    <li id="register-link"><a href="/register.html">Register</a></li>
+    <li id="admin-link" class="hidden"><a href="/admin">Admin</a></li>
+    <li id="login-link"><a href="/login.html">Login</a></li>
+    <li id="logout-link" class="hidden">
+      <a href="/api/user/logout" >Logout</a>
+    </li>
   </ul>
   <div id="admin-flag" style="display: none"></div>
 </nav>
