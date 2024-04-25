@@ -34,6 +34,7 @@ db.run(
     itemId INTEGER,
     FOREIGN KEY (userId) REFERENCES user(id),
     FOREIGN KEY (itemId) REFERENCES items(id)
+    ON DELETE CASCADE
   );`
 );
 
@@ -44,6 +45,7 @@ db.run(`CREATE TABLE IF NOT EXISTS orders (
     purchaseDate INTEGER,
     FOREIGN KEY (userId) REFERENCES user(id)
     FOREIGN KEY (itemId) REFERENCES items(id)
+    ON DELETE CASCADE
   );`);
 
 db.run(`CREATE TABLE IF NOT EXISTS userAddress (

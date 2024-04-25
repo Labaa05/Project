@@ -21,11 +21,11 @@
 
           <label>
             Name
-            <input name="name" type="text" placeholder="Name" />
+            <input name="name" type="text" placeholder="Name" required />
           </label>
           <label>
             Price
-            <input type="number" name="price" placeholder="Price" />
+            <input type="number" name="price" placeholder="Price" required step="any" />
           </label>
           <label>
             Description
@@ -33,7 +33,7 @@
           </label>
           <label>
             Image
-            <input type="file" name="image" />
+            <input type="file" name="image" required />
           </label>
 
           <input
@@ -57,6 +57,7 @@
             id="deleteButton"
             value="Delete Product"
             class="button"
+            required
           />
         </form>
         <form action="/api/product/edit" method="POST">
